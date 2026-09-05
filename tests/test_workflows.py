@@ -238,23 +238,23 @@ class TestReportWorkflow:
             assert cap not in caps, f"Report should not include {cap}"
 
 
-class TestBlockedWorkflows:
-    """Test deferred/blocked workflows."""
+class TestAdvancedWorkflows:
+    """Test advanced workflows (IDA, decompile, runtime)."""
 
-    def test_decompile_blocked(self):
-        """Test decompile is blocked."""
+    def test_decompile_implemented(self):
+        """Test decompile is implemented."""
         wf = get_workflow("ios.decompile")
-        assert wf.status == WorkflowStatus.BLOCKED
+        assert wf.status == WorkflowStatus.IMPLEMENTED
 
-    def test_ida_blocked(self):
-        """Test IDA is blocked."""
+    def test_ida_implemented(self):
+        """Test IDA is implemented."""
         wf = get_workflow("ios.ida")
-        assert wf.status == WorkflowStatus.BLOCKED
+        assert wf.status == WorkflowStatus.IMPLEMENTED
 
-    def test_runtime_blocked(self):
-        """Test runtime is blocked."""
+    def test_runtime_partial(self):
+        """Test runtime is partial (requires device)."""
         wf = get_workflow("ios.runtime")
-        assert wf.status == WorkflowStatus.BLOCKED
+        assert wf.status == WorkflowStatus.PARTIAL
 
 
 class TestWorkflowValidator:

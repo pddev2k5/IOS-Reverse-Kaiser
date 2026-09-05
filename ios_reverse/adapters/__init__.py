@@ -39,6 +39,53 @@ from .selector import (
     configure_tool_system,
 )
 
+# Deep analysis adapters
+from .ida import (
+    IDAMCPAdapter,
+    IDATargetInfo,
+    IDAFunction,
+    IDAXref,
+    IDAString,
+    IDAImport,
+    IDAExport,
+    IDAConnectionState,
+)
+
+from .ghidra import (
+    GhidraHeadlessAdapter,
+    GhidraFunction,
+    GhidraXref,
+    GhidraDecompileResult,
+)
+
+from .rizin import (
+    RizinAdapter,
+    RizinFunction,
+    RizinXref,
+    RizinImport,
+    RizinExport,
+)
+
+from .runtime import (
+    RuntimeProviderAdapter,
+    RuntimeProvider,
+    SessionState,
+    RuntimeDevice,
+    RuntimeProcess,
+    RuntimeModule,
+    RuntimeClass,
+    RuntimeObservation,
+)
+
+from .decompiler import (
+    DecompilerProvider,
+    DecompilerProviderContract,
+    DecompilerManager,
+    DecompiledFunction,
+    FunctionInfo,
+    XrefInfo,
+)
+
 __all__ = [
     # Base
     "AdapterError",
@@ -73,4 +120,45 @@ __all__ = [
     "get_tool_selector",
     "get_health_service",
     "configure_tool_system",
+
+    # IDA adapter
+    "IDAMCPAdapter",
+    "IDATargetInfo",
+    "IDAFunction",
+    "IDAXref",
+    "IDAString",
+    "IDAImport",
+    "IDAExport",
+    "IDAConnectionState",
+
+    # Ghidra adapter
+    "GhidraHeadlessAdapter",
+    "GhidraFunction",
+    "GhidraXref",
+    "GhidraDecompileResult",
+
+    # Rizin adapter
+    "RizinAdapter",
+    "RizinFunction",
+    "RizinXref",
+    "RizinImport",
+    "RizinExport",
+
+    # Runtime adapter
+    "RuntimeProviderAdapter",
+    "RuntimeProvider",
+    "SessionState",
+    "RuntimeDevice",
+    "RuntimeProcess",
+    "RuntimeModule",
+    "RuntimeClass",
+    "RuntimeObservation",
+
+    # Decompiler
+    "DecompilerProvider",
+    "DecompilerProviderContract",
+    "DecompilerManager",
+    "DecompiledFunction",
+    "FunctionInfo",
+    "XrefInfo",
 ]

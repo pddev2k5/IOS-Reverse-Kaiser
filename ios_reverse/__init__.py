@@ -9,7 +9,7 @@ This module provides:
 - Case workspace management
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "IOS REVERSE KAISER"
 
 from .engine.intent import Intent, IntentResolver

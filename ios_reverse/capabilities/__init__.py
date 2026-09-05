@@ -39,6 +39,17 @@ from .callflow_reconstruction import CallflowReconstructCapability
 from .crypto_detection import CryptoDetectionCapability
 from .anti_analysis_detection import AntiAnalysisDetectionCapability
 from .coverage_auditor import CoverageAuditorCapability
+# v0.2.0 Deep Analysis Capabilities
+from .ida_analysis import IDAAnalysisCapability, IDATargetVerificationCapability
+from .decompiler import DecompilerCapability, XrefAnalysisCapability
+from .runtime import RuntimeAnalysisCapability, RuntimeSessionCapability
+from .static_analysis import (
+    SDKFingerprintingCapability,
+    SecretScanningCapability,
+    KeychainAnalysisCapability,
+    JailbreakDetectionCapability,
+    ObfuscationDetectionCapability,
+)
 
 __all__ = [
     "CapabilityExecutor",
@@ -83,4 +94,19 @@ __all__ = [
     "AntiAnalysisDetectionCapability",
     # Coverage capabilities (P04.7)
     "CoverageAuditorCapability",
+    # v0.2.0 IDA/MCP capabilities (P14)
+    "IDAAnalysisCapability",
+    "IDATargetVerificationCapability",
+    # v0.2.0 Decompiler capabilities (P15)
+    "DecompilerCapability",
+    "XrefAnalysisCapability",
+    # v0.2.0 Runtime capabilities (P17)
+    "RuntimeAnalysisCapability",
+    "RuntimeSessionCapability",
+    # v0.2.0 Static Analysis capabilities (P16)
+    "SDKFingerprintingCapability",
+    "SecretScanningCapability",
+    "KeychainAnalysisCapability",
+    "JailbreakDetectionCapability",
+    "ObfuscationDetectionCapability",
 ]

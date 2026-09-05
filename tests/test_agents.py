@@ -429,15 +429,15 @@ class TestWorkflowIntegration:
         assert len(full.selected_roles) >= len(std.selected_roles)
 
 
-class TestBlockedWorkflows:
-    """Test that blocked workflows are handled."""
+class TestAdvancedWorkflows:
+    """Test that advanced workflows are implemented."""
 
     def test_decompile_workflow(self):
-        """Test decompile workflow exists (blocked)."""
+        """Test decompile workflow exists."""
         from ios_reverse.workflows import get_workflow
         wf = get_workflow("ios.decompile")
         assert wf is not None
-        assert wf.status.value == "blocked"
+        assert wf.status.value == "implemented"
 
 
 class TestAgentTask:

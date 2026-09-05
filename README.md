@@ -2,7 +2,7 @@
 
 **iOS Reverse Engineering Workflow Framework**
 
-[![Tests](https://img.shields.io/badge/tests-571%20passed-green)]()
+[![Tests](https://img.shields.io/badge/tests-603%20passed-green)]()
 [![Python](https://img.shields.io/badge/python-3.11+-blue)]()
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)]()
 
@@ -61,9 +61,9 @@ pip install -e .
 | `login-flow` | Authentication callflow | ✓ IMPLEMENTED |
 | `crypto` | Crypto primitive detection | ✓ IMPLEMENTED |
 | `anti-analysis` | Anti-analysis detection | ✓ IMPLEMENTED |
-| `decompile` | Decompiled pseudocode | ⊘ BLOCKED |
-| `ida` | IDA Pro integration | ⊘ BLOCKED |
-| `runtime` | Runtime instrumentation | ⊘ BLOCKED |
+| `decompile` | Decompiled pseudocode | ✓ IMPLEMENTED |
+| `ida` | IDA Pro integration | ✓ IMPLEMENTED |
+| `runtime` | Runtime instrumentation | ◐ PARTIAL |
 | `report` | Generate analysis report | ✓ IMPLEMENTED |
 
 ### Depth Levels
@@ -147,6 +147,11 @@ Interruption → Resume:
 | plutil | plist parsing (macOS) | No |
 | codesign | Code signing verification | No |
 | nm | Symbol listing (macOS) | No |
+| IDA Pro | Deep analysis + decompilation | No |
+| ida-pro-mcp | IDA MCP server | No |
+| Ghidra | Headless decompilation | No |
+| rizin | CLI binary analysis | No |
+| Frida | Runtime instrumentation | No |
 | strings | String extraction | No |
 | IDA Pro | Deep disassembly | No |
 | Ghidra | Alternative disassembly | No |

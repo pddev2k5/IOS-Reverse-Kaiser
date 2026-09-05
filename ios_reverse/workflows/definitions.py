@@ -1316,7 +1316,7 @@ def create_full_workflow() -> WorkflowDefinition:
 
 
 def create_decompile_workflow() -> WorkflowDefinition:
-    """Create the ios.decompile workflow (structure only - actual decompilation deferred to P09)."""
+    """Create the ios.decompile workflow."""
     nodes = [
         WorkflowNode(
             node_id="artifact_detect",
@@ -1336,37 +1336,50 @@ def create_decompile_workflow() -> WorkflowDefinition:
             dependencies=["macho_analysis"],
         ),
         WorkflowNode(
-            node_id="decompile_blocked",
-            description="Decompiler not yet implemented",
+            node_id="decompiler_analysis",
+            capability_id="decompiler.analyze",
+            description="Decompile with available provider (IDA/Ghidra/rizin)",
             dependencies=["language_detection"],
+            depth_profiles={Depth.DEEP: True, Depth.FULL: True},
+        ),
+        WorkflowNode(
+            node_id="xref_analysis",
+            capability_id="decompiler.xref_analysis",
+            description="Cross-reference analysis",
+            dependencies=["decompiler_analysis"],
+            depth_profiles={Depth.FULL: True},
         ),
     ]
 
     edges = [
         WorkflowEdge(from_node="artifact_detect", to_node="macho_analysis"),
         WorkflowEdge(from_node="macho_analysis", to_node="language_detection"),
-        WorkflowEdge(from_node="language_detection", to_node="decompile_blocked"),
+        WorkflowEdge(from_node="language_detection", to_node="decompiler_analysis"),
+        WorkflowEdge(from_node="decompiler_analysis", to_node="xref_analysis"),
     ]
 
     return WorkflowDefinition(
         workflow_id="ios.decompile",
         intent=Intent.DECOMPILE.value,
-        status=WorkflowStatus.BLOCKED,
+        status=WorkflowStatus.IMPLEMENTED,
         accepted_artifacts=["ipa", "app", "framework", "macho"],
-        default_depth=Depth.STANDARD,
-        supported_depths=[Depth.QUICK, Depth.STANDARD, Depth.DEEP, Depth.FULL],
+        default_depth=Depth.DEEP,
+        supported_depths=[Depth.DEEP, Depth.FULL],
         nodes=nodes,
         edges=edges,
         entry_node="artifact_detect",
-        terminal_nodes=["decompile_blocked"],
+        terminal_nodes=["decompiler_analysis", "xref_analysis"],
         complexity=Complexity.HIGH,
         stop_conditions=[
-            StopCondition("decompiler_unavailable", "Decompiler adapter not implemented"),
+            StopCondition("decompilation_complete", "Decompilation analysis complete"),
         ],
         success_conditions=[
-            SuccessCondition("languages_detected", "Runtimes identified"),
+            SuccessCondition("functions_decompiled", "Functions decompiled"),
+            SuccessCondition("xrefs_analyzed", "Cross-references analyzed"),
         ],
         outputs=[
+            OutputArtifact("decompiled_functions", "outputs/{workflow}/functions/"),
+            OutputArtifact("xrefs", "outputs/{workflow}/xrefs/"),
             OutputArtifact("language_report", "outputs/{workflow}/languages.json"),
         ],
         resume_enabled=True,
@@ -1374,7 +1387,7 @@ def create_decompile_workflow() -> WorkflowDefinition:
 
 
 def create_ida_workflow() -> WorkflowDefinition:
-    """Create the ios.ida workflow (structure only - actual IDA integration deferred to P09)."""
+    """Create the ios.ida workflow."""
     nodes = [
         WorkflowNode(
             node_id="artifact_detect",
@@ -1388,44 +1401,61 @@ def create_ida_workflow() -> WorkflowDefinition:
             dependencies=["artifact_detect"],
         ),
         WorkflowNode(
-            node_id="ida_blocked",
-            description="IDA integration not yet implemented",
+            node_id="target_verification",
+            capability_id="ida.target_verification",
+            description="Verify target binary",
             dependencies=["tool_check"],
+        ),
+        WorkflowNode(
+            node_id="ida_analysis",
+            capability_id="ida.analysis",
+            description="IDA analysis (functions, imports, exports, strings, xrefs)",
+            dependencies=["target_verification"],
+        ),
+        WorkflowNode(
+            node_id="evidence_export",
+            description="Export IDA evidence",
+            dependencies=["ida_analysis"],
         ),
     ]
 
     edges = [
         WorkflowEdge(from_node="artifact_detect", to_node="tool_check"),
-        WorkflowEdge(from_node="tool_check", to_node="ida_blocked"),
+        WorkflowEdge(from_node="tool_check", to_node="target_verification"),
+        WorkflowEdge(from_node="target_verification", to_node="ida_analysis"),
+        WorkflowEdge(from_node="ida_analysis", to_node="evidence_export"),
     ]
 
     return WorkflowDefinition(
         workflow_id="ios.ida",
         intent=Intent.IDA.value,
-        status=WorkflowStatus.BLOCKED,
-        accepted_artifacts=["ipa", "app", "framework", "macho"],
+        status=WorkflowStatus.IMPLEMENTED,
+        accepted_artifacts=["ipa", "app", "framework", "macho", "idb"],
         default_depth=Depth.DEEP,
         supported_depths=[Depth.DEEP, Depth.FULL],
         nodes=nodes,
         edges=edges,
         entry_node="artifact_detect",
-        terminal_nodes=["ida_blocked"],
+        terminal_nodes=["evidence_export"],
         complexity=Complexity.HIGH,
         stop_conditions=[
-            StopCondition("ida_unavailable", "IDA adapter not implemented"),
+            StopCondition("ida_analysis_complete", "IDA analysis complete"),
         ],
         success_conditions=[
-            SuccessCondition("tool_checked", "IDA availability checked"),
+            SuccessCondition("functions_listed", "Functions enumerated"),
+            SuccessCondition("xrefs_analyzed", "Cross-references analyzed"),
         ],
         outputs=[
-            OutputArtifact("tool_status", "outputs/{workflow}/ida-status.json"),
+            OutputArtifact("ida_report", "outputs/{workflow}/ida-report.json"),
+            OutputArtifact("functions", "outputs/{workflow}/functions/"),
+            OutputArtifact("xrefs", "outputs/{workflow}/xrefs/"),
         ],
         resume_enabled=True,
     )
 
 
 def create_runtime_workflow() -> WorkflowDefinition:
-    """Create the ios.runtime workflow (structure only - actual runtime analysis deferred to P09)."""
+    """Create the ios.runtime workflow."""
     nodes = [
         WorkflowNode(
             node_id="artifact_detect",
@@ -1434,36 +1464,46 @@ def create_runtime_workflow() -> WorkflowDefinition:
             dependencies=[],
         ),
         WorkflowNode(
-            node_id="runtime_blocked",
-            description="Runtime analysis not yet implemented",
+            node_id="runtime_session",
+            capability_id="runtime.session",
+            description="Manage runtime session",
             dependencies=["artifact_detect"],
+        ),
+        WorkflowNode(
+            node_id="runtime_analysis",
+            capability_id="runtime.analysis",
+            description="Runtime analysis (Frida/LLDB)",
+            dependencies=["runtime_session"],
         ),
     ]
 
     edges = [
-        WorkflowEdge(from_node="artifact_detect", to_node="runtime_blocked"),
+        WorkflowEdge(from_node="artifact_detect", to_node="runtime_session"),
+        WorkflowEdge(from_node="runtime_session", to_node="runtime_analysis"),
     ]
 
     return WorkflowDefinition(
         workflow_id="ios.runtime",
         intent=Intent.RUNTIME.value,
-        status=WorkflowStatus.BLOCKED,
+        status=WorkflowStatus.PARTIAL,
         accepted_artifacts=["ipa", "app"],
         default_depth=Depth.FULL,
         supported_depths=[Depth.FULL],
         nodes=nodes,
         edges=edges,
         entry_node="artifact_detect",
-        terminal_nodes=["runtime_blocked"],
+        terminal_nodes=["runtime_analysis"],
         complexity=Complexity.VERY_HIGH,
         stop_conditions=[
-            StopCondition("runtime_unavailable", "Runtime adapter not implemented"),
+            StopCondition("runtime_analysis_complete", "Runtime analysis complete"),
         ],
         success_conditions=[
-            SuccessCondition("runtime_deferred", "Runtime analysis deferred to P09"),
+            SuccessCondition("session_established", "Runtime session established"),
+            SuccessCondition("observations_captured", "Runtime observations captured"),
         ],
         outputs=[
-            OutputArtifact("status", "outputs/{workflow}/runtime-status.json"),
+            OutputArtifact("runtime_report", "outputs/{workflow}/runtime-report.json"),
+            OutputArtifact("observations", "outputs/{workflow}/observations/"),
         ],
         resume_enabled=True,
     )

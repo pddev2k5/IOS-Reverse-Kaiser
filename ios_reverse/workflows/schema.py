@@ -40,6 +40,7 @@ class Depth(str, Enum):
 class WorkflowStatus(str, Enum):
     """Workflow implementation status."""
     IMPLEMENTED = "implemented"
+    PARTIAL = "partial"  # Implementation exists, requires external tools/device
     BLOCKED = "blocked"
     DEFERRED = "deferred"
     PLANNED = "planned"

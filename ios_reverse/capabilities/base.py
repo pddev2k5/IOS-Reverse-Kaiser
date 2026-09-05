@@ -128,6 +128,55 @@ class EvidenceRecord:
     capability_id: str
     execution_id: str
     timestamp: datetime
+    # Optional file info
+    file_path: Optional[str] = None
+    sha256: Optional[str] = None
+    size: Optional[int] = None
+
+    def to_dict(self) -> dict:
+        """Serialize to dictionary."""
+        return {
+            "id": self.id,
+            "type": self.type,
+            "capability_id": self.capability_id,
+            "execution_id": self.execution_id,
+            "timestamp": self.timestamp.isoformat(),
+            "file_path": self.file_path,
+            "sha256": self.sha256,
+            "size": self.size,
+        }
+
+
+class EvidenceType(Enum):
+    """Evidence type categories."""
+    STRING_HINT = "string_hint"
+    STRUCTURAL = "structural"
+    REFERENCE = "reference"
+    CORRELATED = "correlated"
+    DYNAMIC = "dynamic"
+
+
+class EvidenceStrength(Enum):
+    """Evidence strength levels."""
+    STRING_HINT = "string_hint"
+    STRUCTURAL = "structural"
+    REFERENCE = "reference"
+    CORRELATED = "correlated"
+    VERIFIED = "verified"
+    DYNAMIC = "dynamic"
+
+
+@dataclass
+class Evidence:
+    """Evidence for v0.2.0 capabilities."""
+    evidence_id: str
+    evidence_type: EvidenceType
+    strength: EvidenceStrength
+    source_artifact: str
+    content: Dict[str, Any]
+    capability_id: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
 
     # Optional file info - may not be available for all evidence types
     file_path: Optional[str] = None
@@ -257,6 +306,35 @@ class CapabilityResult:
             error_code=error_code,
             error_message=error_message,
             provenance=provenance,
+        )
+
+    @classmethod
+    def from_evidence(
+        cls,
+        evidence_list: List["Evidence"],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> "CapabilityResult":
+        """Create a result from a list of Evidence objects (v0.2.0 style)."""
+        # Convert Evidence objects to evidence records
+        evidence_records = []
+        for ev in evidence_list:
+            evidence_records.append(EvidenceRecord(
+                id=ev.evidence_id,
+                type=ev.evidence_type.value if hasattr(ev.evidence_type, 'value') else str(ev.evidence_type),
+                capability_id=ev.capability_id,
+                execution_id=f"exec-{ev.evidence_id[:8]}",
+                timestamp=ev.timestamp if ev.timestamp else datetime.utcnow(),
+                file_path=ev.metadata.get("file_path"),
+                sha256=ev.metadata.get("sha256"),
+                size=ev.metadata.get("size"),
+            ))
+
+        return cls(
+            status=CapabilityStatus.SUCCESS,
+            execution_id=f"exec-{uuid.uuid4().hex[:8]}",
+            timestamp=datetime.utcnow(),
+            metadata=metadata or {},
+            evidence=evidence_records,
         )
 
 
