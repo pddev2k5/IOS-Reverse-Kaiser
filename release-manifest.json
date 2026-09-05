@@ -1,0 +1,171 @@
+{
+  "project": "IOS REVERSE KAISER",
+  "version": "0.1.0",
+  "release_status": "RC",
+  "release_date": "2024-09-04",
+  "description": "Evidence-driven iOS reverse-engineering workflow framework",
+
+  "workflows": {
+    "implemented": [
+      "ios.unpack",
+      "ios.inspect",
+      "ios.dump",
+      "ios.macho",
+      "ios.objc",
+      "ios.swift",
+      "ios.network",
+      "ios.login-flow",
+      "ios.crypto",
+      "ios.anti-analysis",
+      "ios.report",
+      "ios.full"
+    ],
+    "blocked": [
+      "ios.decompile",
+      "ios.ida",
+      "ios.runtime"
+    ]
+  },
+
+  "capabilities": {
+    "count": 50,
+    "domains": [
+      "foundation",
+      "bundle",
+      "macho",
+      "binary",
+      "objc",
+      "swift",
+      "network",
+      "crypto",
+      "anti_analysis",
+      "coverage",
+      "report"
+    ]
+  },
+
+  "agents": {
+    "roles": [
+      "planner",
+      "artifact-analyst",
+      "objc-swift-analyst",
+      "binary-analyst",
+      "network-analyst",
+      "evidence-validator",
+      "coverage-auditor",
+      "reporter"
+    ],
+    "budget_levels": {
+      "quick": 1,
+      "standard": 2,
+      "deep": 4,
+      "full": 6
+    }
+  },
+
+  "adapters": {
+    "core_count": 5,
+    "macho_count": 4,
+    "language_count": 3,
+    "analysis_count": 5,
+    "total": 17,
+    "optional_tools": [
+      "ipsw",
+      "otool",
+      "plutil",
+      "codesign",
+      "nm",
+      "strings",
+      "swift-demangle",
+      "IDA Pro",
+      "Ghidra",
+      "radare2"
+    ]
+  },
+
+  "testing": {
+    "total_tests": 571,
+    "passed": 571,
+    "skipped": 2,
+    "test_categories": [
+      "unit",
+      "contract",
+      "integration",
+      "regression",
+      "determinism",
+      "reliability",
+      "chaos"
+    ]
+  },
+
+  "platforms": {
+    "supported": [
+      "Windows",
+      "Linux",
+      "macOS"
+    ],
+    "core_analysis": "all",
+    "native_tools": "macOS only (otool, plutil, codesign)"
+  },
+
+  "known_limitations": [
+    {
+      "category": "Filesystem",
+      "status": "PARTIAL",
+      "reason": "Atomic writes and fcntl limitations"
+    },
+    {
+      "category": "IDA Pro",
+      "status": "BLOCKED",
+      "reason": "Requires IDA license and MCP server"
+    },
+    {
+      "category": "Ghidra",
+      "status": "BLOCKED",
+      "reason": "Requires headless server configuration"
+    },
+    {
+      "category": "Runtime",
+      "status": "BLOCKED",
+      "reason": "Requires jailbreak and Frida"
+    },
+    {
+      "category": "Encrypted binaries",
+      "status": "BLOCKED",
+      "reason": "Cannot analyze without decryption"
+    }
+  ],
+
+  "source_provenance": {
+    "location": "_research/sources/",
+    "includes_research": true,
+    "excludes_from_release": [
+      "_research/sources/",
+      "workspace/cases/",
+      "*.ipa",
+      "*.idb",
+      "*.i64"
+    ]
+  },
+
+  "documentation": {
+    "user_docs": 12,
+    "developer_docs": 2,
+    "changelog": true,
+    "attribution": true,
+    "contributing": true
+  },
+
+  "remaining_actions": [
+    "Final Git commit (P12)",
+    "Git tag v0.1.0",
+    "Release package validation"
+  ],
+
+  "p12_pre_push_verification": [
+    "Checkpoint integrity on Windows",
+    "Lock stale detection works",
+    "Corrupted checkpoint recovery",
+    "Resume from partial checkpoint"
+  ]
+}

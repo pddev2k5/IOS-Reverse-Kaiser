@@ -1,0 +1,153 @@
+# Workflow: dump
+# Comprehensive extraction workflow
+
+id: workflow-dump
+version: 1.0.0
+name: Comprehensive Dump
+description: Extract and analyze all app contents
+intent: dump
+
+nodes:
+  # Phase 1: Validation and Extraction
+  - id: validate
+    name: Validate IPA
+    capability: ipa.validate
+    conditions:
+      artifact_required: ipa
+    timeout_ms: 30000
+    on_failure: abort
+
+  - id: extract
+    name: Extract IPA
+    capability: ipa.unpack
+    depends_on: [validate]
+    timeout_ms: 120000
+    on_failure: abort
+
+  # Phase 2: Metadata
+  - id: plist
+    name: Extract Plist
+    capability: plist.extract
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+  - id: entitlements
+    name: Extract Entitlements
+    capability: entitlements.extract
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+  # Phase 3: Components
+  - id: frameworks
+    name: Inventory Frameworks
+    capability: framework.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  - id: dylibs
+    name: Inventory Dylibs
+    capability: dylib.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  - id: extensions
+    name: Inventory Extensions
+    capability: extension.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  # Phase 4: Binary Analysis
+  - id: architecture
+    name: Discover Architecture
+    capability: architecture.discovery
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+  - id: symbols
+    name: Extract Symbols
+    capability: binary.symbols
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: strings
+    name: Extract Strings
+    capability: binary.strings
+    depends_on: [extract]
+    timeout_ms: 120000
+    on_failure: continue
+
+  - id: imports
+    name: Extract Imports
+    capability: binary.imports
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: exports
+    name: Extract Exports
+    capability: binary.exports
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  # Phase 5: Metadata (ObjC/Swift)
+  - id: objc
+    name: Extract ObjC Metadata
+    capability: objc.metadata
+    depends_on: [extract]
+    timeout_ms: 120000
+    on_failure: continue
+
+  - id: swift
+    name: Extract Swift Metadata
+    capability: swift.metadata
+    depends_on: [extract]
+    timeout_ms: 120000
+    on_failure: continue
+
+edges:
+  - from: validate
+    to: extract
+    type: success
+  - from: extract
+    to: [plist, entitlements, frameworks, dylibs, extensions, architecture, symbols, strings, imports, exports, objc, swift]
+    type: success
+
+capabilities_used:
+  - ipa.validate
+  - ipa.unpack
+  - plist.extract
+  - entitlements.extract
+  - framework.inventory
+  - dylib.inventory
+  - extension.inventory
+  - architecture.discovery
+  - binary.symbols
+  - binary.strings
+  - binary.imports
+  - binary.exports
+  - objc.metadata
+  - swift.metadata
+
+coverage_dimensions:
+  - artifact_validated
+  - payload_extracted
+  - plist_extracted
+  - entitlements_extracted
+  - frameworks_inventoried
+  - dylibs_inventoried
+  - extensions_inventoried
+  - architecture_discovered
+  - symbols_extracted
+  - strings_extracted
+  - imports_extracted
+  - exports_extracted
+  - objc_metadata_extracted
+  - swift_metadata_extracted

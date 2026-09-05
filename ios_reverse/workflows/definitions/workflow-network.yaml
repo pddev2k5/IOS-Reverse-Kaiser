@@ -1,0 +1,47 @@
+# Workflow: network
+# Network analysis workflow
+
+id: workflow-network
+version: 1.0.0
+name: Network Analysis
+description: Analyze network patterns and endpoints
+intent: network
+
+nodes:
+  - id: discovery
+    name: Network Discovery
+    capability: network.discovery
+    conditions:
+      artifact_required: strings
+    timeout_ms: 60000
+    on_failure: abort
+
+  - id: frameworks
+    name: Framework Detection
+    capability: network.framework_detect
+    depends_on: [discovery]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: endpoints
+    name: Endpoint Extraction
+    capability: network.endpoint_extract
+    depends_on: [discovery]
+    timeout_ms: 120000
+    on_failure: continue
+
+edges:
+  - from: discovery
+    to: [frameworks, endpoints]
+    type: success
+
+capabilities_used:
+  - network.discovery
+  - network.framework_detect
+  - network.endpoint_extract
+
+coverage_dimensions:
+  - network_strings_found
+  - network_frameworks_detected
+  - endpoints_extracted
+  - urls_found

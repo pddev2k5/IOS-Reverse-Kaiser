@@ -1,0 +1,61 @@
+# Workflow: unpack
+# Extracts IPA contents
+
+id: workflow-unpack
+version: 1.0.0
+name: IPA Unpack
+description: Extract and inventory IPA contents
+intent: unpack
+
+nodes:
+  - id: validate
+    name: Validate IPA
+    capability: ipa.validate
+    conditions:
+      artifact_required: ipa
+    timeout_ms: 30000
+    on_failure: abort
+
+  - id: extract
+    name: Extract IPA
+    capability: ipa.unpack
+    depends_on: [validate]
+    timeout_ms: 120000
+    on_failure: abort
+
+  - id: inventory
+    name: Inventory Bundle
+    capability: bundle.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  - id: plist
+    name: Extract Plist
+    capability: plist.extract
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+edges:
+  - from: validate
+    to: extract
+    type: success
+  - from: extract
+    to: inventory
+    type: success
+  - from: extract
+    to: plist
+    type: success
+
+capabilities_used:
+  - ipa.validate
+  - ipa.unpack
+  - bundle.inventory
+  - plist.extract
+
+coverage_dimensions:
+  - artifact_validated
+  - payload_extracted
+  - bundle_inventoried
+  - plist_extracted

@@ -1,0 +1,81 @@
+{
+  "id": "CP-000",
+  "build": "ios-reverse-kaiser",
+  "phase": "P00",
+  "endpoint": "EP-000",
+  "status": "COMPLETE",
+  "created": "2026-09-04T00:00:00Z",
+  "updated": "2026-09-04T00:00:00Z",
+  "version": "0.0.1",
+
+  "completed_nodes": [
+    "bootstrap-structure",
+    "bootstrap-master-plan",
+    "bootstrap-status",
+    "bootstrap-next",
+    "bootstrap-decisions",
+    "bootstrap-risks",
+    "bootstrap-capability-matrix",
+    "bootstrap-source-provenance",
+    "bootstrap-context-pack",
+    "bootstrap-endpoint",
+    "bootstrap-checkpoint",
+    "bootstrap-validation"
+  ],
+
+  "current_node": "P00-COMPLETE",
+
+  "next_actions": [
+    "P01: Clone source repositories",
+    "P01: Audit actual implementations",
+    "P01: Classify features as CLAIMED/IMPLEMENTED/PARTIAL/BROKEN/MISSING",
+    "P01: Update SOURCE_PROVENANCE.md with findings"
+  ],
+
+  "important_files": [
+    ".kaiser-build/MASTER_PLAN.md",
+    ".kaiser-build/STATUS.md",
+    ".kaiser-build/NEXT.md",
+    ".kaiser-build/DECISIONS.md",
+    ".kaiser-build/RISKS.md",
+    ".kaiser-build/CAPABILITY_MATRIX.md",
+    ".kaiser-build/SOURCE_PROVENANCE.md",
+    ".kaiser-build/CONTEXT_PACK.md",
+    ".kaiser-build/endpoints/EP-000-bootstrap.md"
+  ],
+
+  "tests": {
+    "directory_structure": "PASS",
+    "artifact_existence": "PASS",
+    "phase_plan_validity": "PASS",
+    "capability_count": "PASS"
+  },
+
+  "known_failures": [],
+
+  "metrics": {
+    "phases_defined": 13,
+    "capabilities_planned": 31,
+    "risks_identified": 10,
+    "decisions_logged": 10,
+    "artifacts_created": 13
+  },
+
+  "source_repos": {
+    "repo1": {
+      "url": "https://github.com/Patr1ck-S/ios-reverse-engineering-skill",
+      "status": "NOT_CLONED"
+    },
+    "repo2": {
+      "url": "https://github.com/anatoly505/ios-reverse-skills",
+      "status": "NOT_CLONED"
+    },
+    "repo3": {
+      "url": "https://github.com/DamonZS/PE-reverse-skill",
+      "status": "NOT_CLONED"
+    }
+  },
+
+  "next_phase": "P01",
+  "entry_conditions_met": true
+}

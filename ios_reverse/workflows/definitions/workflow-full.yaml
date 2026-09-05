@@ -1,0 +1,240 @@
+# Workflow: full
+# Complete analysis workflow with coverage audit
+
+id: workflow-full
+version: 1.0.0
+name: Complete Analysis
+description: Full analysis with coverage audit
+intent: full
+
+nodes:
+  # Phase 1: Extraction
+  - id: validate
+    name: Validate IPA
+    capability: ipa.validate
+    timeout_ms: 30000
+    on_failure: abort
+
+  - id: extract
+    name: Extract IPA
+    capability: ipa.unpack
+    depends_on: [validate]
+    timeout_ms: 120000
+    on_failure: abort
+
+  # Phase 2: Metadata
+  - id: plist
+    name: Extract Plist
+    capability: plist.extract
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+  - id: entitlements
+    name: Extract Entitlements
+    capability: entitlements.extract
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+  # Phase 3: Components
+  - id: frameworks
+    name: Inventory Frameworks
+    capability: framework.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  - id: dylibs
+    name: Inventory Dylibs
+    capability: dylib.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  - id: extensions
+    name: Inventory Extensions
+    capability: extension.inventory
+    depends_on: [extract]
+    timeout_ms: 30000
+    on_failure: continue
+
+  # Phase 4: Mach-O
+  - id: macho_slices
+    name: Mach-O Slices
+    capability: macho.slices
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: load_commands
+    name: Load Commands
+    capability: macho.load_commands
+    depends_on: [macho_slices]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: architecture
+    name: Architecture
+    capability: architecture.discovery
+    depends_on: [extract]
+    timeout_ms: 10000
+    on_failure: continue
+
+  # Phase 5: Binary Analysis
+  - id: symbols
+    name: Extract Symbols
+    capability: binary.symbols
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: strings
+    name: Extract Strings
+    capability: binary.strings
+    depends_on: [extract]
+    timeout_ms: 120000
+    on_failure: continue
+
+  - id: imports
+    name: Extract Imports
+    capability: binary.imports
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: exports
+    name: Extract Exports
+    capability: binary.exports
+    depends_on: [extract]
+    timeout_ms: 60000
+    on_failure: continue
+
+  # Phase 6: Metadata
+  - id: objc
+    name: ObjC Metadata
+    capability: objc.metadata
+    depends_on: [extract]
+    timeout_ms: 120000
+    on_failure: continue
+
+  - id: objc_deep
+    name: Deep ObjC
+    capability: objc.deep_metadata
+    depends_on: [objc]
+    timeout_ms: 180000
+    on_failure: continue
+
+  - id: swift
+    name: Swift Metadata
+    capability: swift.metadata
+    depends_on: [extract]
+    timeout_ms: 120000
+    on_failure: continue
+
+  - id: swift_demangle
+    name: Swift Demangle
+    capability: swift.demangle
+    depends_on: [swift]
+    timeout_ms: 60000
+    on_failure: continue
+
+  # Phase 7: Network
+  - id: network_discovery
+    name: Network Discovery
+    capability: network.discovery
+    depends_on: [strings]
+    timeout_ms: 60000
+    on_failure: continue
+
+  - id: network_endpoints
+    name: Network Endpoints
+    capability: network.endpoint_extract
+    depends_on: [network_discovery]
+    timeout_ms: 120000
+    on_failure: continue
+
+  # Phase 8: Crypto
+  - id: crypto
+    name: Crypto Identification
+    capability: crypto.identify
+    depends_on: [strings]
+    timeout_ms: 60000
+    on_failure: continue
+
+  # Phase 9: Anti-Analysis
+  - id: anti_analysis
+    name: Anti-Analysis Scan
+    capability: anti_analysis.scan
+    depends_on: [strings]
+    timeout_ms: 60000
+    on_failure: continue
+
+  # Phase 10: Coverage Audit
+  - id: audit
+    name: Coverage Audit
+    capability: coverage.audit
+    depends_on: [plist, entitlements, frameworks, dylibs, extensions, macho_slices, architecture, symbols, strings, imports, exports, objc, objc_deep, swift, swift_demangle, network_discovery, network_endpoints, crypto, anti_analysis]
+    timeout_ms: 30000
+    on_failure: continue
+
+edges:
+  - from: validate
+    to: extract
+    type: success
+  - from: extract
+    to: [plist, entitlements, frameworks, dylibs, extensions, macho_slices, architecture, symbols, strings, imports, exports, objc, swift]
+    type: success
+  - from: strings
+    to: [network_discovery, crypto, anti_analysis]
+    type: success
+
+capabilities_used:
+  - ipa.validate
+  - ipa.unpack
+  - plist.extract
+  - entitlements.extract
+  - framework.inventory
+  - dylib.inventory
+  - extension.inventory
+  - macho.slices
+  - macho.load_commands
+  - architecture.discovery
+  - binary.symbols
+  - binary.strings
+  - binary.imports
+  - binary.exports
+  - objc.metadata
+  - objc.deep_metadata
+  - swift.metadata
+  - swift.demangle
+  - network.discovery
+  - network.endpoint_extract
+  - crypto.identify
+  - anti_analysis.scan
+  - coverage.audit
+
+coverage_dimensions:
+  - artifact_validated
+  - payload_extracted
+  - plist_extracted
+  - entitlements_extracted
+  - frameworks_inventoried
+  - dylibs_inventoried
+  - extensions_inventoried
+  - macho_slices_analyzed
+  - load_commands_analyzed
+  - architecture_discovered
+  - symbols_extracted
+  - strings_extracted
+  - imports_extracted
+  - exports_extracted
+  - objc_metadata_extracted
+  - objc_deep_extracted
+  - swift_metadata_extracted
+  - swift_demangled
+  - network_discovered
+  - network_endpoints_extracted
+  - crypto_identified
+  - anti_analysis_scanned
+  - coverage_audited

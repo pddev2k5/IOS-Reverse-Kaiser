@@ -1,0 +1,84 @@
+{
+  "id": "CP-002",
+  "build": "ios-reverse-kaiser",
+  "phase": "P02",
+  "endpoint": "EP-002",
+  "status": "COMPLETE",
+  "created": "2026-09-04T00:00:00Z",
+  "updated": "2026-09-04T00:00:00Z",
+  "version": "0.0.2",
+
+  "completed_nodes": [
+    "P02: Architecture overview",
+    "P02: Intent model",
+    "P02: Capability registry schema",
+    "P02: Workflow schema",
+    "P02: Agent schema",
+    "P02: State machine",
+    "P02: Evidence model",
+    "P02: Case workspace schema",
+    "P02: Tool adapter schema",
+    "P02: Phase document",
+    "P02: Checkpoint"
+  ],
+
+  "current_node": "P02-COMPLETE",
+
+  "next_actions": [
+    "P03: Core Execution Engine",
+    "P03: Build workflow DAG executor",
+    "P03: Implement state machine",
+    "P03: Build complexity scorer",
+    "P03: Implement intent resolver",
+    "P03: Create checkpoint system"
+  ],
+
+  "important_files": [
+    ".kaiser-build/arch/ARCHITECTURE.md",
+    ".kaiser-build/arch/INTENT_MODEL.md",
+    ".kaiser-build/registry/CAPABILITY_REGISTRY.md",
+    ".kaiser-build/registry/WORKFLOW_SCHEMA.md",
+    ".kaiser-build/registry/AGENT_SCHEMA.md",
+    ".kaiser-build/registry/STATE_MACHINE.md",
+    ".kaiser-build/registry/CLAIMS_SCHEMA.md",
+    ".kaiser-build/registry/CASE_WORKSPACE.md",
+    ".kaiser-build/registry/TOOL_ADAPTERS.md"
+  ],
+
+  "tests": {
+    "architecture_document": "PASS",
+    "intent_model": "PASS",
+    "capability_schema": "PASS",
+    "workflow_schema": "PASS",
+    "agent_schema": "PASS",
+    "state_machine": "PASS",
+    "evidence_model": "PASS",
+    "case_workspace": "PASS",
+    "tool_adapters": "PASS"
+  },
+
+  "known_failures": [],
+
+  "metrics": {
+    "documents_created": 9,
+    "schemas_locked": 9,
+    "capabilities_planned": 31,
+    "intents_defined": 15,
+    "depth_profiles": 4,
+    "agent_roles": 8,
+    "tool_adapters": 15
+  },
+
+  "schemas_locked": [
+    "CAPABILITY_REGISTRY",
+    "WORKFLOW_SCHEMA",
+    "AGENT_SCHEMA",
+    "STATE_MACHINE",
+    "CLAIMS_SCHEMA",
+    "CASE_WORKSPACE",
+    "TOOL_ADAPTERS"
+  ],
+
+  "next_phase": "P03",
+  "entry_conditions_met": true
+}
